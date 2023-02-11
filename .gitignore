@@ -194,4 +194,7 @@ gradle-app.setting
 # Java heap dump
 *.hprof
 
+### MySQL Data
+data_8
+
 # End of https://www.toptal.com/developers/gitignore/api/java,gradle,intellij+all,macos,visualstudiocode
