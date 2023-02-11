@@ -37,7 +37,7 @@ public class Article extends AuditingFields{
     @ToString.Exclude // 순환 참조로 제외 진행 (양방향 바인드)
     @OrderBy("id")
     @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
-    private final Set<ArticleComment> articleConmments = new LinkedHashSet<>();
+    private final Set<ArticleComment> articleComments = new LinkedHashSet<>();
 
     protected Article() {}
 
