@@ -1,29 +1,55 @@
 package fastcampus.projectboard.dto;
 
-import java.io.Serializable;
+import fastcampus.projectboard.domain.Article;
+import fastcampus.projectboard.domain.ArticleComment;
+
 import java.time.LocalDateTime;
 
 /**
  * A DTO for the {@link fastcampus.projectboard.domain.ArticleComment} entity
  */
 public record ArticleCommentDto(
-        Long articleId,
         Long id,
+        Long articleId,
+
+        UserAccountDto userAccountDto,
+        String content,
         LocalDateTime createdAt,
         String createdBy,
         LocalDateTime modifiedAt,
-        String modifiedBy,
-        String content
+        String modifiedBy
+
 ){
-    public static ArticleCommentDto of(Long articleId, Long id, LocalDateTime createdAt, String createdBy, LocalDateTime modifiedAt, String modifiedBy, String content) {
-        return new ArticleCommentDto(articleId, id, createdAt, createdBy, modifiedAt, modifiedBy, content);
+    public static ArticleCommentDto of(Long id,
+                                       Long articleId,
+
+                                       UserAccountDto userAccountDto,
+                                       String content,
+                                       LocalDateTime createdAt,
+                                       String createdBy,
+                                       LocalDateTime modifiedAt,
+                                       String modifiedBy) {
+        return new ArticleCommentDto(id, articleId, userAccountDto, content, createdAt, createdBy, modifiedAt, modifiedBy);
     }
 
-    public Long articleId() {
-        return articleId;
+    public static ArticleCommentDto from(ArticleComment entity) {
+        return new ArticleCommentDto(
+                entity.getId(),
+                entity.getArticle().getId(),
+                UserAccountDto.from(entity.getUserAccount()),
+                entity.getContent(),
+                entity.getCreatedAt(),
+                entity.getCreatedBy(),
+                entity.getModifiedAt(),
+                entity.getModifiedBy()
+        );
     }
 
-    public Long id() {
-        return id;
+    public ArticleComment toEntity(Article entity) {
+        return ArticleComment.of(
+                entity,
+                userAccountDto.toEntity(),
+                content
+        );
     }
 }
