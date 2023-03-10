@@ -2,7 +2,9 @@ package fastcampus.projectboard.service;
 
 import fastcampus.projectboard.domain.Article;
 import fastcampus.projectboard.domain.ArticleComment;
+import fastcampus.projectboard.domain.UserAccount;
 import fastcampus.projectboard.dto.ArticleCommentDto;
+import fastcampus.projectboard.dto.UserAccountDto;
 import fastcampus.projectboard.repository.ArticleCommentRepository;
 import fastcampus.projectboard.repository.ArticleRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -38,15 +40,15 @@ class ArticleCommentServiceTest {
     void givenArticleId_whenSearchingComments_thenReturnsComments() {
         // Given
         Long articleId = 1L;
-        given(articleRepository.findById(articleId)).willReturn(Optional.of(
-                Article.of("title","content","#java")));
+        ArticleComment expected = createArticleComment("content");
+        given(articleCommentRepository.findByArticle_Id(articleId)).willReturn(List.of(expected));
 
         // When
-        List<ArticleCommentDto> articleComments =  sut.searchArticleComment(articleId);
+        List<ArticleCommentDto> actual = sut.searchArticleComments(articleId);
 
         // Then
-        assertThat(articleComments).isNotNull();
-        then(articleRepository).should().findById(articleId);
+        assertThat(actual).hasSize(1).first().hasFieldOrPropertyWithValue("content", expected.getContent());
+        then(articleCommentRepository).should().findByArticle_Id(articleId);
     }
 
     @DisplayName("댓글 정보 입력, 댓글 저장")
@@ -125,23 +127,59 @@ class ArticleCommentServiceTest {
         then(articleCommentRepository).should().deleteById(articleCommentId);
     }
 
+    private ArticleCommentDto createArticleCommentDto(String content) {
+        return ArticleCommentDto.of(
+                1L,
+                1L,
+                createUserAccountDto(),
+                content,
+                LocalDateTime.now(),
+                "mdgome",
+                LocalDateTime.now(),
+                "mdgome"
+        );
+    }
+
+    private UserAccountDto createUserAccountDto(){
+        return UserAccountDto.of(
+                1L,
+                "mdgome",
+                "password",
+                "mdgome@mail.com",
+                "mdgome",
+                "This is memo",
+                LocalDateTime.now(),
+                "mdgome",
+                LocalDateTime.now(),
+                "mdgome"
+        );
+    }
+
     private ArticleComment createArticleComment(String oldContent) {
         return ArticleComment.of(
-                Article.of("title","content","hashtag")
-                , oldContent
+                Article.of(createUserAccount(), "title","content","hashtag"),
+                createUserAccount(),
+                oldContent
+        );
+    }
+
+    private UserAccount createUserAccount() {
+        return UserAccount.of(
+                "mdgome",
+                "password",
+                "mdgome@mail.com",
+                "mdgome",
+                null
         );
     }
 
     private Article createArticle() {
         return Article.of(
-                "title"
-                ,"content"
-                ,"#java"
+                createUserAccount(),
+                "title",
+                "content",
+                "#java"
         );
-    }
-
-    private ArticleCommentDto createArticleCommentDto(String content) {
-        return ArticleCommentDto.of(1L,1L,LocalDateTime.now(),"mdgome",null,"mdgome",content);
     }
 
 
